@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Remove Plank groups
+Name[es]=Quitar grupos de Plank
+Name[pt]=Remover grupos do Plank
+Name[pt_BR]=Remover grupos do Plank
+Comment=Uninstall the application group docklet
+Comment[es]=Desinstala el docklet de grupos de aplicaciones
+Comment[pt]=Remove o docklet de grupos de aplicações
+Comment[pt_BR]=Remove o docklet de grupos de aplicativos
+Exec=bash -c 'p="$1"; p="${p#file://}"; cd "$(dirname "$p")" && exec ./desinstalar.sh' -- %k
+Icon=edit-delete
+Terminal=false
+Categories=Utility;System;
+StartupNotify=true
