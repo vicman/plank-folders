@@ -1,4 +1,4 @@
-docklet/build/
+/build/
 *.so
-*.vapi
-*.h
+*.o
+*~

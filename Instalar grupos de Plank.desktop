@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install Plank groups
+Name[es]=Instalar grupos de Plank
+Name[pt]=Instalar grupos do Plank
+Name[pt_BR]=Instalar grupos do Plank
+Comment=Install application folders on the dock
+Comment[es]=Instala carpetas de aplicaciones en el dock
+Comment[pt]=Instala pastas de aplicações na dock
+Comment[pt_BR]=Instala pastas de aplicativos no dock
+Exec=bash -c 'p="$1"; p="${p#file://}"; cd "$(dirname "$p")" && exec ./install.sh' -- %k
+Icon=folder
+Terminal=false
+Categories=Utility;System;
+StartupNotify=true

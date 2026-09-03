@@ -1,0 +1,134 @@
+# Spanish translations for plank-group-docklet.
+msgid ""
+msgstr ""
+"Project-Id-Version: plank-group-docklet 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03 17:40-0500\n"
+"PO-Revision-Date: 2026-09-03 17:40-0500\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Application group"
+msgstr "Grupo de aplicaciones"
+
+msgid "Application group 2"
+msgstr "Grupo de aplicaciones 2"
+
+msgid "Application group 3"
+msgstr "Grupo de aplicaciones 3"
+
+msgid "Application group 4"
+msgstr "Grupo de aplicaciones 4"
+
+msgid "Application group 5"
+msgstr "Grupo de aplicaciones 5"
+
+msgid "Application group 6"
+msgstr "Grupo de aplicaciones 6"
+
+msgid "Application group 7"
+msgstr "Grupo de aplicaciones 7"
+
+msgid "Application group 8"
+msgstr "Grupo de aplicaciones 8"
+
+msgid "Launch the applications in one category"
+msgstr "Lanza las aplicaciones de una categoría"
+
+msgid "Add application to %s"
+msgstr "Añadir aplicación a %s"
+
+msgid "Rename group"
+msgstr "Renombrar grupo"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Change icon of %s"
+msgstr "Cambiar icono de %s"
+
+msgid "Theme icon or file:"
+msgstr "Icono del tema o archivo:"
+
+msgid "Folder"
+msgstr "Carpeta"
+
+msgid "Applications"
+msgstr "Aplicaciones"
+
+msgid "Development"
+msgstr "Desarrollo"
+
+msgid "Browser"
+msgstr "Navegador"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Multimedia"
+msgstr "Multimedia"
+
+msgid "Documents"
+msgstr "Documentos"
+
+msgid "Games"
+msgstr "Juegos"
+
+msgid "Graphics"
+msgstr "Gráficos"
+
+msgid "Office"
+msgstr "Oficina"
+
+msgid "System"
+msgstr "Sistema"
+
+msgid "Preferences"
+msgstr "Preferencias"
+
+msgid "Choose file…"
+msgstr "Elegir archivo…"
+
+msgid "Choose icon"
+msgstr "Elegir icono"
+
+msgid "Use"
+msgstr "Usar"
+
+msgid "Images"
+msgstr "Imágenes"
+
+msgid "Remove from group"
+msgstr "Quitar del grupo"
+
+msgid "Click to open. The − icon removes the application from the group."
+msgstr "Clic para abrir. El icono − quita la aplicación del grupo."
+
+msgid "No applications yet. Drag a dock icon or use “Add application”."
+msgstr "No hay aplicaciones. Arrastra un icono del dock o usa «Añadir aplicación»."
+
+msgid "Add"
+msgstr "Añadir"
+
+msgid "Add application…"
+msgstr "Añadir aplicación…"
+
+msgid "Create another folder"
+msgstr "Crear otra carpeta"
+
+msgid "Open group folder"
+msgstr "Abrir carpeta del grupo"
+
+msgid "Change icon…"
+msgstr "Cambiar icono…"
+
+msgid "Remove this group from the dock"
+msgstr "Quitar este grupo del dock"

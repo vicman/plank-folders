@@ -1,70 +1,117 @@
-# Plank Folders
+# Application groups for Plank Reloaded
 
-Carpetas de aplicaciones estilo Android para [Plank Reloaded](https://github.com/zquestz/plank-reloaded).
+[English](README.md) · [Español](README.es.md) · [Português](README.pt.md) · [Português (Brasil)](README.pt_BR.md)
 
-Cada grupo es una carpeta del dock: arrastra un icono existente sobre ella para añadirlo, el icono individual se elimina del dock y la carpeta muestra miniaturas de las aplicaciones que contiene. Al hacer clic, se abre un menú centrado encima de la carpeta.
+This docklet adds a launcher folder to the dock. Each instance is a category,
+for example Development, Web or Communication. Click the icon to see the
+applications in that folder.
 
-> Estado: prototipo funcional para Plank Reloaded 0.11.172 en X11. El agrupamiento mediante arrastre requiere el pequeño parche incluido para Plank.
+![Application folders on Plank](screenshot.jpg)
 
-## Funciones
+Menus, dialogs and the installer follow the system language: English, Spanish
+or Portuguese.
 
-- Arrastrar una aplicación ya fijada al dock sobre un grupo.
-- Menú anclado sobre la carpeta, con iconos y nombres.
-- Mini-iconos de las primeras tres aplicaciones sobre el icono de carpeta.
-- Renombrar y eliminar grupos desde el menú contextual.
-- Almacena los lanzadores dentro de `~/.local/share/plank-groups/`.
-- La prueba se ejecuta aislada; no reemplaza el Plank instalado.
+## Easy install
 
-## Estructura
+On Debian, Ubuntu, Linux Mint and derivatives:
+
+1. Open this folder.
+2. Double-click **Install Plank groups**.
+3. Accept and enter your password when asked.
+
+If the icon is crossed out, right-click → **Allow launching**.
+
+From a terminal:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+The assistant installs what is missing, copies the docklet and can create three
+sample groups (Development, Web and Communication) from programs you already
+have.
+
+To remove it: double-click **Remove Plank groups**, or `./desinstalar.sh`.
+
+## How it is organised
+
+Each group is a folder of copies or symbolic links to `.desktop` files. It
+does not move or change your programs.
 
 ```text
-docklet/                       # Plugin Application group
-patches/                       # Parche para el arrastre interno de Plank
-scripts/run-experimental.sh    # Lanza el prototipo de forma aislada
+~/Aplicaciones-dock/
+├── Desarrollo/       # code.desktop, org.gnome.Terminal.desktop, …
+├── Web/              # brave-browser.desktop, firefox.desktop, …
+└── Comunicacion/     # telegramdesktop.desktop, discord.desktop, …
 ```
 
-## Requisitos
+Original launchers are usually in:
 
-Ubuntu, Mint o Debian con X11 y Plank Reloaded. Para compilar:
+- `/usr/share/applications/` (system applications)
+- `~/.local/share/applications/` (your applications)
+
+You can use symbolic links to avoid copies. Example:
 
 ```bash
-sudo apt install build-essential meson ninja-build valac gettext \
-  libgtk-3-dev libgee-0.8-dev libbamf3-dev libwnck-3-dev \
-  libgnome-menu-3-dev libcanberra-dev libdbusmenu-glib-dev \
-  libdbusmenu-gtk3-dev libxi-dev libxfixes-dev
+mkdir -p ~/Aplicaciones-dock/Desarrollo
+ln -s /usr/share/applications/code.desktop ~/Aplicaciones-dock/Desarrollo/
 ```
 
-## Probar sin sustituir Plank
+## Build and install by hand
 
-Clona Plank Reloaded y aplica el parche:
+If you prefer not to use the assistant, on Debian, Ubuntu, Mint and derivatives:
 
 ```bash
-git clone https://github.com/zquestz/plank-reloaded.git plank-reloaded-android-groups
-cd plank-reloaded-android-groups
-git apply ../plank-folders/patches/0001-internal-app-drops.patch
-meson setup build --prefix="$PWD/runtime"
+sudo apt install build-essential meson valac gettext libplank-dev libgtk-3-dev libgee-0.8-dev
+```
+
+From this folder:
+
+```bash
+meson setup --prefix=/usr build
 meson compile -C build
+sudo meson install -C build
 ```
 
-Compila el docklet:
-
-```bash
-cd ../plank-folders/docklet
-meson setup build --prefix=/usr
-meson compile -C build
-```
-
-Detén temporalmente el dock habitual y ejecuta la compilación experimental:
+Restart Plank:
 
 ```bash
 killall plank
-LD_LIBRARY_PATH="../plank-reloaded-android-groups/build/lib" \
-PLANK_DOCKLET_DIRS="$PWD/build" \
-../plank-reloaded-android-groups/build/src/plank -n android_group_test
+plank &
 ```
 
-En Preferencias → Agregados, añade **Application group**. Arrastra una aplicación ya fijada encima de esa carpeta. Pulsa `Ctrl+C` para cerrar la prueba y ejecuta `plank &` para volver al Plank normal.
+Then `Ctrl` + right-click an empty area of the dock → **Add docklet** →
+**Application group**.
 
-## Licencia
+## Configure a category
 
-El docklet se distribuye bajo GPL-3.0-or-later. El parche se aplica a Plank Reloaded, que mantiene sus propias licencias GPL-3.0 y LGPL-2.1.
+When you add it, Plank creates a `.dockitem` file in
+`~/.config/plank/dock1/launchers/`. Edit the preferences block and set the
+name and folder:
+
+```ini
+[PlankDockItemPreferences]
+Launcher=docklet://app-group
+
+[PlankGroupAppGroupPreferences]
+title=Development
+icon=/usr/share/icons/Humanity/places/64/folder.svg
+folder=~/Aplicaciones-dock/Desarrollo
+```
+
+To add more categories, add the docklet again and change `title`, `icon` and
+`folder` in its `.dockitem` file.
+
+### Useful icons
+
+- `applications-development`
+- `web-browser`
+- `internet-chat`
+- `multimedia-player`
+- `folder-documents`
+
+## Current limits
+
+This is a category launcher: it does not automatically group open windows of
+the same program. That would require changing Plank itself.
