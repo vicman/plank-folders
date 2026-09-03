@@ -1,0 +1,142 @@
+diff --git a/lib/DragManager.vala b/lib/DragManager.vala
+index 4c5ffde..4254d85 100644
+--- a/lib/DragManager.vala
++++ b/lib/DragManager.vala
+@@ -73,6 +73,10 @@ namespace Plank {
+     uint drag_hover_timer_id = 0U;
+     uint external_drag_idle_id = 0U;
+ 
++    // The pointer can leave GTK's drag surface immediately before drag_end.
++    // Keep the latest accepting item for internal application drops.
++    weak DockItem? internal_drop_target = null;
++
+     Gee.ArrayList<string>? drag_data = null;
+ 
+     // Cache for can_accept_drop results to avoid repeated I/O during drag motion
+@@ -157,11 +161,62 @@ namespace Plank {
+     [CCode (instance_pos = -1)]
+     void drag_data_get (Gtk.Widget w, Gdk.DragContext context, Gtk.SelectionData selection_data, uint info, uint time_) {
+       if (InternalDragActive && DragItem != null) {
+-        string uri = "%s\r\n".printf (DragItem.as_uri ());
++        // Export the underlying launcher when possible.  This lets docklets
++        // accept an application dragged from the dock (for example, an app
++        // group) rather than receiving Plank's private temporary URI.
++        string source = DragItem.Launcher;
++        if (source == null || source == "")
++          source = DragItem.as_uri ();
++        string uri = "%s\r\n".printf (source);
+         selection_data.set (selection_data.get_target (), 8, (uchar[]) uri.to_utf8 ());
+       }
+     }
+ 
++    Gee.ArrayList<string> internal_drag_uris () {
++      var uris = new Gee.ArrayList<string> ();
++      if (DragItem == null)
++        return uris;
++
++      string source = DragItem.Launcher;
++      if (source == null || source == "")
++        source = DragItem.as_uri ();
++      uris.add (source);
++      return uris;
++    }
++
++    bool accept_internal_drop () {
++      if (DragItem == null)
++        return false;
++
++      unowned DockItem? target = controller.window.HoveredItem;
++      if (target == null)
++        target = internal_drop_target;
++      if (target == null || target == DragItem)
++        return false;
++
++      var uris = internal_drag_uris ();
++      if (!target.can_accept_drop (uris))
++        return false;
++
++      if (!target.accept_drop (uris))
++        return false;
++
++      message ("Accepted internal application drop on %s", target.Text);
++
++      // Match the Android-folder behavior: a pinned source icon becomes part
++      // of the group.  A running application remains visible as a transient
++      // item, following Plank's normal removal rules.
++      if (DragItem.can_be_removed ()) {
++        unowned ApplicationDockItem? app_item = (DragItem as ApplicationDockItem);
++        if (app_item == null || !(app_item.is_running () || app_item.has_unity_info ())) {
++          DragItem.IsVisible = false;
++          DragItem.Container.remove (DragItem);
++        }
++        DragItem.delete ();
++      }
++      return true;
++    }
++
+     /**
+      * Whether the current dragged-data is accepted by the given dock-item.
+      * Results are cached per item to avoid repeated I/O during drag motion.
+@@ -221,6 +276,7 @@ namespace Plank {
+ 
+       InternalDragActive = true;
+       drag_canceled = false;
++      internal_drop_target = null;
+ 
+       if (proxy_window != null) {
+         enable_drag_to (window);
+@@ -329,7 +385,11 @@ namespace Plank {
+ 
+       if (!drag_canceled && DragItem != null) {
+         hide_manager.update_hovered ();
+-        if (!hide_manager.Hovered) {
++        // At drag-end the hide manager can already report false even though
++        // DockWindow still knows the item below the pointer.  The target
++        // check inside accept_internal_drop() is the authoritative check.
++        bool grouped = accept_internal_drop ();
++        if (!grouped && !hide_manager.Hovered) {
+           if (DragItem.can_be_removed ()) {
+             // Remove from dock
+             unowned ApplicationDockItem? app_item = (DragItem as ApplicationDockItem);
+@@ -343,7 +403,7 @@ namespace Plank {
+             context.get_device ().get_position (null, out x, out y);
+             PoofWindow.get_default ().show_at (x, y);
+           }
+-        } else if (controller.window.HoveredItem == null) {
++        } else if (!grouped && controller.window.HoveredItem == null) {
+           // Dropped somewhere on dock
+           // Pin this item if possible/needed, so we assume the user cares
+           // about this application when changing its position
+@@ -357,6 +417,7 @@ namespace Plank {
+ 
+       InternalDragActive = false;
+       DragItem = null;
++      internal_drop_target = null;
+ 
+       controller.window.notify["HoveredItem"].disconnect (hovered_item_changed);
+ 
+@@ -413,6 +474,7 @@ namespace Plank {
+         return;
+ 
+       if (!controller.hide_manager.Hovered) {
++        internal_drop_target = null;
+         controller.window.update_hovered (-1, -1);
+         controller.renderer.animated_draw ();
+       }
+@@ -489,9 +551,13 @@ namespace Plank {
+       unowned DockItem hovered_item = controller.window.HoveredItem;
+ 
+       if (InternalDragActive && DragItem != null && hovered_item != null
+-          && DragItem != hovered_item
+-          && DragItem.Container == hovered_item.Container) {
+-        DragItem.Container.move_to (DragItem, hovered_item);
++          && DragItem != hovered_item) {
++        if (hovered_item.can_accept_drop (internal_drag_uris ())) {
++          internal_drop_target = hovered_item;
++        } else if (DragItem.Container == hovered_item.Container) {
++          internal_drop_target = null;
++          DragItem.Container.move_to (DragItem, hovered_item);
++        }
+       }
+ 
+       if (drag_hover_timer_id > 0U) {

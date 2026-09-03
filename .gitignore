@@ -1,0 +1,4 @@
+docklet/build/
+*.so
+*.vapi
+*.h
